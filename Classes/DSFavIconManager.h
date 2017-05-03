@@ -31,6 +31,7 @@
 
 /** Wether it should attempt to retrieve apple touch icons if the size of the favicon is less than 16 logical points. Defaults to false. */
 @property BOOL useAppleTouchIconForHighResolutionDisplays;
+@property BOOL alwaysUseAppleTouchIconForHighResolutionDisplays;
 
 /** Returns the image for an icon if it has already been downloaded.
  @param url   The URL for which the icon is requested.

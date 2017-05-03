@@ -57,6 +57,7 @@ CGSize sizeInPixels(UINSImage *icon) {
         _placeholder = [UINSImage imageNamed:@"favicon"];
         _discardRequestsForIconsWithPendingOperation = false;
         _useAppleTouchIconForHighResolutionDisplays  = false;
+        _alwaysUseAppleTouchIconForHighResolutionDisplays = false;
     }
     return self;
 }
@@ -121,7 +122,11 @@ CGSize sizeInPixels(UINSImage *icon) {
 
         op.acceptanceBlock = ^BOOL (UINSImage *icon) {
             CGSize size = sizeInPixels(icon);
-            return size.width >= (16 * screenScale()) && size.height >= (16.f * screenScale());
+            if (_alwaysUseAppleTouchIconForHighResolutionDisplays) {
+                return size.width >= 32 && size.height >= 32;
+            } else {
+                return size.width >= (16 * screenScale()) && size.height >= (16.f * screenScale());
+            }
         };
 
         [_operationsPerURL setObject:op forKey:url];
@@ -138,7 +143,8 @@ CGSize sizeInPixels(UINSImage *icon) {
 }
 
 - (NSArray*)defaultNames {
-    if (_useAppleTouchIconForHighResolutionDisplays && screenScale() > 1.f) {
+    if (_alwaysUseAppleTouchIconForHighResolutionDisplays
+        || (_useAppleTouchIconForHighResolutionDisplays && screenScale() > 1.f)) {
         return @[ @"favicon.ico", @"apple-touch-icon-precomposed.png", @"apple-touch-icon.png", @"touch-icon-iphone.png" ];
     } else {
         return @[ @"favicon.ico" ];
@@ -147,7 +153,8 @@ CGSize sizeInPixels(UINSImage *icon) {
 
 - (NSString *)acceptedRelationshipAttributesRegex {
     NSArray *array;
-    if (_useAppleTouchIconForHighResolutionDisplays && screenScale() > 1.f) {
+    if (_alwaysUseAppleTouchIconForHighResolutionDisplays
+        || (_useAppleTouchIconForHighResolutionDisplays && screenScale() > 1.f)) {
         array = @[ @"shortcut icon", @"icon", @"apple-touch-icon" ];
     } else {
         array = @[ @"shortcut icon", @"icon" ];
